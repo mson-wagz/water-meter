@@ -2,10 +2,37 @@
 import express from "express"
 import cors from "cors"
 import pool from "./src/libs/db.js"
+import bcrypt from "bcrypt"
+import dotenv from "dotenv"
+dotenv.config()  // 👈 Tell dotenv to load from .env.local
+
+
+
 
 const app = express()
 app.use(cors())
 app.use(express.json())
+
+// eslint-disable-next-line no-undef
+const PORT = process.env.PORT || 3001
+
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  // eslint-disable-next-line no-undef
+  if (email !== process.env.ADMIN_EMAIL) {
+    return res.status(401).json({ error: "Invalid email" });
+  }
+
+  // eslint-disable-next-line no-undef
+  const valid = await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
+  if (!valid) {
+    return res.status(401).json({ error: "Invalid password" });
+  }
+
+  res.status(200).json({ message: "Login successful" });
+});
 
 // Get all meter readings
 app.get("/api/readings", async (req, res) => {
@@ -182,4 +209,4 @@ app.get("/api/payments/:meterReadingId", async (req, res) => {
   }
 })
 
-app.listen(3001, () => console.log("API server running on port 3001"))
+app.listen(PORT, () => console.log("API server running on port 3001"))

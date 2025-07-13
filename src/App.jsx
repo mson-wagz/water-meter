@@ -41,6 +41,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./components/ui/collapsible"
 import { toast, Toaster } from "sonner"
 
+
 const API = "http://localhost:3001/api"
 
 export default function App() {
