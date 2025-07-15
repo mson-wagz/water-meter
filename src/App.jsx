@@ -42,7 +42,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./component
 import { toast, Toaster } from "sonner"
 
 
-const API = "http://localhost:3001/api"
+const API = "https://water-meter-backend.onrender.com";
 
 export default function App() {
   const [readings, setReadings] = useState([])
@@ -73,13 +73,13 @@ export default function App() {
     setLoading(true)
     try {
       // Fetch readings
-      const res = await fetch(`${API}/readings`)
+      const res = await fetch(`${API}/api/readings`)
       let data = await res.json()
       if (!Array.isArray(data)) data = []
       // Fetch payments for each reading
       const readingsWithPayments = await Promise.all(
         data.map(async (reading) => {
-          const pres = await fetch(`${API}/payments/${reading.id}`)
+          const pres = await fetch(`${API}/api/payments/${reading.id}`)
           const payments = await pres.json()
           return { ...reading, payments: payments || [] }
         })
@@ -155,13 +155,13 @@ export default function App() {
     try {
       let res
       if (editingReading) {
-        res = await fetch(`${API}/readings/${editingReading.id}`, {
+        res = await fetch(`${API}/api/readings/${editingReading.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         })
       } else {
-        res = await fetch(`${API}/readings`, {
+        res = await fetch(`${API}/api/readings`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
@@ -191,7 +191,7 @@ export default function App() {
     }
     try {
       console.log("Sending payment with ID:", selectedReading)
-      const res = await fetch(`${API}/payments`, {
+      const res = await fetch(`${API}/api/payments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -222,7 +222,7 @@ export default function App() {
       }
       // Add payment record if needed
       if (paymentToAdd > 0) {
-        await fetch(`${API}/payments`, {
+        await fetch(`${API}/api/payments`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -237,7 +237,7 @@ export default function App() {
       
       
       // Update the reading
-      await fetch(`${API}/readings/${quickUpdateReading.id}/payment-status`, {
+      await fetch(`${API}/api/readings/${quickUpdateReading.id}/payment-status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -280,7 +280,7 @@ export default function App() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`${API}/readings/${id}`, { method: "DELETE" })
+      const res = await fetch(`${API}/api/readings/${id}`, { method: "DELETE" })
       if (!res.ok) throw new Error("Failed to delete reading")
       toast.success("Reading deleted successfully")
       await loadReadings()
